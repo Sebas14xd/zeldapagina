@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42 42" role="img" aria-label="El ciclo de Hyrule">
+  <rect width="42" height="42" rx="8" fill="#0b1715"/>
+  <g fill="none" stroke="#d9b86b" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M21 5 6 34h30L21 5Z"/>
+    <path d="m13 20 8 14 8-14M21 5v15M13 20h16"/>
+  </g>
+</svg>

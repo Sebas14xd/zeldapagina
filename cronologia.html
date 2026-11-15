@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1715"><link rel="icon" type="image/svg+xml" href="favicon.svg"><meta name="description" content="Línea temporal de The Legend of Zelda basada en la tabla compartida."><title>Cronología · El ciclo de Hyrule</title><link rel="preconnect" href="https://zeldawiki.wiki"><link rel="preconnect" href="https://zelda.fandom.com"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"></head><body ><header class="topbar">
+  <a class="brand" href="index.html" aria-label="Inicio — El ciclo de Hyrule"><svg class="brand-mark" viewBox="0 0 42 42" fill="none" aria-hidden="true"><path d="M21 3 3 35h36L21 3Z" stroke="currentColor" stroke-width="1.4"/><path d="m12 19 9 16 9-16M21 3v16M12 19h18" stroke="currentColor" stroke-width="1.2"/></svg>El ciclo de Hyrule</a>
+  <nav class="topnav" aria-label="Navegación principal"><a href="index.html">Inicio</a><a href="cronologia.html">Cronología</a><a href="galeria.html">Juegos</a><a href="enciclopedia.html">Enciclopedia</a><a href="fuentes.html">Fuentes</a></nav>
+</header><main><section class="page-intro"><p class="section-kicker">Historia y ramas</p><h1>La cronología de Hyrule</h1><p>La tabla compartida organiza los juegos en una ruta común hasta Ocarina of Time y tres continuaciones. Las fichas conservan el orden de esa tabla.</p></section><section class="timeline-wrap" id="cronologia" aria-labelledby="timeline-title">
+      <div class="timeline-head reveal"><div><p class="section-kicker">Línea cronológica · orden de la tabla</p><h2 id="timeline-title">Elige tu camino</h2></div><div class="filters" role="group" aria-label="Filtrar línea temporal">
+        <button class="filter active" data-filter="todas" aria-pressed="true">Todas</button><button class="filter" data-filter="comun" aria-pressed="false">Ruta común</button><button class="filter" data-filter="derrota" aria-pressed="false">Héroe derrotado</button><button class="filter" data-filter="infancia" aria-pressed="false">Héroe niño</button><button class="filter" data-filter="adulto" aria-pressed="false">Héroe adulto</button><button class="filter" data-filter="posterior" aria-pressed="false">Era posterior</button>
+      </div></div>
+      <p class="source-line reveal">El orden y las ramas siguen la <a href="https://docs.google.com/spreadsheets/d/1n4ZQbqIpLrS3S_r6WqHkljf1TvX3SU6DXyN4iQekRBI/edit?gid=0#gid=0" target="_blank" rel="noreferrer">tabla compartida</a>: ruta común, tres desenlaces de <i>Ocarina of Time</i> y una era posterior. Las fichas y portadas enlazan a <a href="https://zelda.fandom.com/es/wiki/Cronolog%C3%ADa" target="_blank" rel="noreferrer">The Legend of Zelda Wiki</a> y <a href="https://zeldawiki.wiki/wiki/Adult_Era" target="_blank" rel="noreferrer">Zelda Wiki</a>.</p>
+
+      <div class="shared reveal" data-section="comun">
+        <div class="shared-label">Ruta común · antes de la bifurcación</div>
+        <div class="shared-games" id="shared-games"></div>
+      </div>
+      <div class="split reveal" data-section="split"><div class="split-gem"><svg viewBox="0 0 40 40" class="triforce" fill="none" aria-hidden="true"><path d="M20 3 3 33h34L20 3Z" stroke="currentColor" stroke-width="1.4"/><path d="m11.5 18 8.5 15 8.5-15M20 3v15m-8.5 0h17" stroke="currentColor" stroke-width="1.2"/></svg></div><strong>Ocarina of Time · el punto de inflexión</strong></div>
+      <svg class="fork-map reveal" viewBox="0 0 1200 100" preserveAspectRatio="none" aria-hidden="true"><path d="M600 0V30C600 52 200 42 200 78V96M600 0V96M600 30C600 52 1000 42 1000 78V96"/><circle cx="200" cy="96" r="4"/><circle cx="600" cy="96" r="4"/><circle cx="1000" cy="96" r="4"/></svg>
+      <div class="branches" id="branches">
+        <article class="branch reveal" data-branch="derrota">
+          <div class="branch-label">Link es derrotado</div><p class="branch-sub">La historia continúa tras la caída del Héroe del Tiempo.</p><div class="branch-list" id="branch-derrota"></div>
+          <div class="oracle-note">Las aventuras de <i>Oracle of Ages</i> y <i>Oracle of Seasons</i> están enlazadas. La hoja las ordena así, aunque se pueden jugar en cualquiera de los dos órdenes.</div>
+        </article>
+        <article class="branch reveal" data-branch="infancia">
+          <div class="branch-label">Link vuelve a su infancia</div><p class="branch-sub">Link regresa con el recuerdo de un futuro que aún no ha ocurrido.</p><div class="branch-list" id="branch-infancia"></div>
+        </article>
+        <article class="branch reveal" data-branch="adulto">
+          <div class="branch-label">Link se queda en el futuro</div><p class="branch-sub">Sin el héroe, Hyrule cae bajo las aguas y comienza otra era.</p><div class="branch-list" id="branch-adulto"></div>
+        </article>
+        <article class="branch reveal" data-branch="posterior">
+          <div class="posterior-info"><div class="branch-label">Era posterior · rama no especificada</div><p class="branch-sub">Mucho tiempo después, los relatos de épocas antiguas se han convertido en leyenda. Nintendo no asigna estos juegos a una de las tres ramas clásicas.</p></div><div class="branch-list" id="branch-posterior"></div>
+        </article>
+      </div>
+    </section></main><footer class="site-footer"><span>El ciclo de Hyrule · guía informativa de fans</span><span>Marcas e ilustraciones pertenecen a sus respectivos titulares · <a href="fuentes.html">Fuentes y créditos</a></span></footer><script>const wiki = "https://zeldawiki.wiki/wiki/Special:FilePath/";
+    const steamGrids = {
+      "Skyward Sword US Bundle BoxArt.jpg": { image:"https://cdn2.steamgriddb.com/thumb/7618c8abfa8fd1fad7373a8797aa304a.jpg", page:"https://www.steamgriddb.com/game/37512/grids" },
+      "TMC NA Box Art.jpg": { image:"https://cdn2.steamgriddb.com/thumb/a687f78b9842c87225e74921765feb1b.jpg", page:"https://www.steamgriddb.com/game/34539/grids" },
+      "Four Swords Box.png": { image:"https://cdn2.steamgriddb.com/thumb/e178050f36518d5b5ccd99ad3dcffcd0.jpg", page:"https://www.steamgriddb.com/game/5275821/grids" },
+      "OoT NA Box.jpg": { image:"https://cdn2.steamgriddb.com/thumb/f711cc70dbdab88f32389ec84e56a242.jpg", page:"https://www.steamgriddb.com/game/21202/grids" },
+      "Zelda SNES.jpg": { image:"https://cdn2.steamgriddb.com/thumb/7edaadde50012f0860952123564eb1ba.jpg", page:"https://www.steamgriddb.com/game/38124/grids" },
+      "LANS NA Box Art.png": { image:"https://cdn2.steamgriddb.com/thumb/0ec360c243d4a23244accb3d04851604.jpg", page:"https://www.steamgriddb.com/game/34336/grids" },
+      "OoA NA Box Art.jpg": { image:"https://cdn2.steamgriddb.com/thumb/e66160e598192a253a015cb90ab371dc.jpg", page:"https://www.steamgriddb.com/game/35190/grids" },
+      "OoS NA Box Art.jpg": { image:"https://cdn2.steamgriddb.com/thumb/1f218b10871e882b90a8dd82996cbdca.jpg", page:"https://www.steamgriddb.com/game/38450/grids" },
+      "ALBW NA Box Art.jpg": { image:"https://cdn2.steamgriddb.com/thumb/6e2376385359dc8bb6ee14e594e924d3.jpg", page:"https://www.steamgriddb.com/game/5209446/grids" },
+      "TFH NA Box Art.png": { image:"https://cdn2.steamgriddb.com/thumb/aba25a9fda63263672f8e84b6d7a4c6e.jpg", page:"https://www.steamgriddb.com/game/5250216/grids" },
+      "EoW NA Box Art.png": { image:"https://cdn2.steamgriddb.com/thumb/e488d6f4064e1584c115f2cd7bed74f0.jpg", page:"https://www.steamgriddb.com/game/5455462/grids" },
+      "TLoZ NES NA Box.png": { image:"https://cdn2.steamgriddb.com/thumb/e49cc7c344acaf1160fd6c2a0190f056.jpg", page:"https://www.steamgriddb.com/game/38050/grids" },
+      "TAoL NA NES Box Artwork.png": { image:"https://cdn2.steamgriddb.com/thumb/657b0ad0569f3ceae3427be2623753cc.jpg", page:"https://www.steamgriddb.com/game/25608/grids" },
+      "MM NA Box Art.png": { image:"https://cdn2.steamgriddb.com/thumb/958c6e525626a72dc5722a63f638a80b.jpg", page:"https://www.steamgriddb.com/game/34302/grids" },
+      "TP NA Wii Box Art.jpg": { image:"https://cdn2.steamgriddb.com/thumb/36d6a670240681fbbf69cbba0c9065ce.jpg", page:"https://www.steamgriddb.com/game/34645/grids" },
+      "FSA NA Box Art.jpg": { image:"https://cdn2.steamgriddb.com/thumb/0383caf72eb0502bb39a2e81fa4fbf01.jpg", page:"https://www.steamgriddb.com/game/1673/grids" },
+      "TWW NA Box Art.png": { image:"https://cdn2.steamgriddb.com/thumb/304678bd2a45713cc7bfcb1a9e19c8e4.jpg", page:"https://www.steamgriddb.com/game/37510/grids" },
+      "PH NA Box Art.jpg": { image:"https://cdn2.steamgriddb.com/thumb/dc9b1f479f6893e3b4d2c5efc3fb0f05.jpg", page:"https://www.steamgriddb.com/game/38076/grids" },
+      "ST NA Box Art.jpg": { image:"https://cdn2.steamgriddb.com/thumb/3bf132226d3001406fa2a834558912a2.jpg", page:"https://www.steamgriddb.com/game/37859/grids" },
+      "BotW NA Switch Box Art.png": { image:"https://cdn2.steamgriddb.com/thumb/121b81f7d167ca2c24fdab4f044048f8.jpg", page:"https://www.steamgriddb.com/game/35744/grids" },
+      "TotK NA Box Art.png": { image:"https://cdn2.steamgriddb.com/thumb/ae758fbcbd5bd841516c53b3c08ebc6f.jpg", page:"https://www.steamgriddb.com/game/5303117/grids" }
+    };
+    const fandom = "https://zelda.fandom.com/es/wiki/";
+    const entries = [
+      { group:"comun", n:"01", title:"Skyward Sword", era:"Era del cielo", color:"#b9a35f", file:"Skyward Sword US Bundle BoxArt.jpg", summary:"Link desciende desde Altárea para encontrar a Zelda. El viaje revela el origen de la Espada Maestra y el ciclo que une a héroe y princesa." },
+      { group:"comun", n:"02", title:"The Minish Cap", era:"Era de la Fuerza", color:"#7da873", file:"TMC NA Box Art.jpg", summary:"Con la ayuda de Ezlo y del diminuto pueblo Minish, Link busca restaurar la espada sagrada y frenar el poder de Vaati." },
+      { group:"comun", n:"03", title:"Four Swords", era:"La espada cuádruple", color:"#719c89", file:"Four Swords Box.png", summary:"La Espada Cuádruple divide a Link en cuatro héroes que deben rescatar a Zelda y volver a sellar a Vaati." },
+      { group:"comun", n:"04", title:"Ocarina of Time", era:"El Héroe del Tiempo", color:"#d2ad57", file:"OoT NA Box.jpg", feature:true, summary:"Link viaja entre la niñez y la edad adulta para detener a Ganondorf. Sus desenlaces abren las tres grandes ramas de la cronología." },
+      { group:"derrota", n:"01", title:"A Link to the Past", era:"Héroe derrotado", color:"#c17e66", file:"Zelda SNES.jpg", summary:"Link se enfrenta al hechicero Agahnim, recorre Hyrule y el Mundo Oscuro y reúne el poder necesario para derrotar a Ganon." },
+      { group:"derrota", n:"02", title:"Link’s Awakening", era:"La isla Koholint", color:"#bd936c", file:"LANS NA Box Art.png", summary:"Tras naufragar, Link despierta en una isla misteriosa. Para volver a casa debe descubrir el secreto del Pez del Viento." },
+      { group:"derrota", n:"03", title:"Oracle of Ages", era:"Las semillas del tiempo", color:"#85a9b3", file:"OoA NA Box Art.jpg", summary:"Link viaja entre pasado y presente para salvar Labrynna y rescatar a Nayru, el Oráculo de los Tiempos." },
+      { group:"derrota", n:"04", title:"Oracle of Seasons", era:"Las estaciones de Holodrum", color:"#b98357", file:"OoS NA Box Art.jpg", summary:"Con el poder de las estaciones, Link cruza Holodrum para rescatar a Din y detener los planes de Onox." },
+      { group:"derrota", n:"05", title:"A Link Between Worlds", era:"Dos reinos, un vínculo", color:"#8bab80", file:"ALBW NA Box Art.jpg", summary:"Link alterna entre Hyrule y Lorule y se transforma en pintura para abrirse paso por muros y mazmorras." },
+      { group:"derrota", n:"06", title:"Tri Force Heroes", era:"La moda de Hytopia", color:"#c27c71", file:"TFH NA Box Art.png", summary:"Tres héroes unen fuerzas en Hytopia para abrirse camino por los Drablands y romper la maldición de la princesa Styla." },
+      { group:"derrota", n:"07", title:"Echoes of Wisdom", era:"La era de la sabiduría", color:"#bc9e64", file:"EoW NA Box Art.png", summary:"Zelda toma el protagonismo y usa el cetro de Tri para crear réplicas de objetos y criaturas y cerrar las brechas del reino." },
+      { group:"derrota", n:"08", title:"The Legend of Zelda", era:"La leyenda original", color:"#c8a24e", file:"TLoZ NES NA Box.png", summary:"Link recorre Hyrule en busca de los fragmentos de la Trifuerza de la Sabiduría y se enfrenta a Ganon para salvar a Zelda." },
+      { group:"derrota", n:"09", title:"Zelda II: The Adventure of Link", era:"El despertar", color:"#9a8054", file:"TAoL NA NES Box Artwork.png", summary:"En una aventura por el norte de Hyrule, Link busca los cristales y la Trifuerza del Valor para despertar a una princesa dormida." },
+      { group:"infancia", n:"01", title:"Majora’s Mask", era:"La tierra de Términa", color:"#72a99c", file:"MM NA Box Art.png", summary:"En una tierra paralela, Link dispone de tres días para detener la caída de la Luna y ayudar a quienes viven bajo su sombra." },
+      { group:"infancia", n:"02", title:"Twilight Princess", era:"El reino del crepúsculo", color:"#73a090", file:"TP NA Wii Box Art.jpg", summary:"Link y Midna intentan devolver la luz a Hyrule, invadida por el crepúsculo. En el otro mundo, Link adopta forma de lobo." },
+      { group:"infancia", n:"03", title:"Four Swords Adventures", era:"La sombra de Vaati", color:"#78a183", file:"FSA NA Box Art.jpg", summary:"Cuatro versiones de Link exploran Hyrule, liberan a las doncellas y desbaratan la alianza entre Vaati y Ganondorf." },
+      { group:"adulto", n:"01", title:"The Wind Waker", era:"La Gran Inundación", color:"#7baeb9", file:"TWW NA Box Art.png", summary:"En un Hyrule cubierto por el mar, Link zarpa en busca de su hermana y descubre el destino del reino perdido." },
+      { group:"adulto", n:"02", title:"Phantom Hourglass", era:"Los mares del Rey del Mar", color:"#84a9b1", file:"PH NA Box Art.jpg", summary:"Link y Tetra exploran un océano desconocido y desafían al barco fantasma para rescatar a sus compañeros." },
+      { group:"adulto", n:"03", title:"Spirit Tracks", era:"La nueva Hyrule", color:"#8eb59b", file:"ST NA Box Art.jpg", summary:"En un nuevo reino conectado por vías de tren, Link y Zelda investigan la desaparición de los raíles espirituales." },
+      { group:"posterior", n:"01", title:"Breath of the Wild", era:"El despertar tras cien años", color:"#a4b872", file:"BotW NA Switch Box Art.png", feature:true, summary:"Link despierta de un largo sueño y explora un Hyrule inmenso para recuperar sus recuerdos y afrontar la amenaza de Ganon." },
+      { group:"posterior", n:"02", title:"Tears of the Kingdom", era:"Cielos, tierra y subsuelo", color:"#b4a469", file:"TotK NA Box Art.png", feature:true, summary:"Con el reino transformado, Link enlaza islas celestes, superficie y profundidades para descubrir el origen de una nueva catástrofe." }
+    ];
+    const branchNames = { comun:"Ruta común", derrota:"Héroe derrotado", infancia:"Héroe niño", adulto:"Héroe adulto", posterior:"Era posterior" };
+    const articleSlug = title => ({
+      "The Legend of Zelda": "The_Legend_of_Zelda",
+      "Zelda II: The Adventure of Link": "Zelda_II%3A_The_Adventure_of_Link"
+    }[title] || "The_Legend_of_Zelda%3A_" + encodeURIComponent(title.replaceAll(" ", "_")));
+    function makeCard(game, index) {
+      const card = document.createElement("article");
+      card.className = `game-card${game.feature ? " feature" : ""}`;
+      card.style.setProperty("--card-accent", game.color);
+      card.style.animationDelay = `${(index % 5) * 55}ms`;
+      const art = document.createElement("div"); art.className = "game-art";
+      const image = document.createElement("img");
+      image.loading = index < 4 ? "eager" : "lazy"; image.decoding = "async"; image.alt = `Portada de ${game.title}`;
+      image.src = steamGrids[game.file].image;
+      image.onerror = () => {
+        if (!image.dataset.retried) { image.dataset.retried = "yes"; image.src = wiki + encodeURIComponent(game.file); return; }
+        image.remove(); const fallback = document.createElement("span"); fallback.className = "art-fallback"; fallback.textContent = "✧"; art.append(fallback);
+      };
+      art.append(image);
+      const info = document.createElement("div"); info.className = "game-info";
+      info.innerHTML = `<div class="game-meta"><span>${game.era}</span><span class="game-num">${game.n}</span></div><h3></h3><p></p><div class="card-links"></div>`;
+      info.querySelector("h3").textContent = game.title;
+      info.querySelector("p").textContent = game.summary;
+      const links = info.querySelector(".card-links");
+      const wikiLink = document.createElement("a"); wikiLink.href = "https://zeldawiki.wiki/wiki/Special:Search?search=" + encodeURIComponent(game.title); wikiLink.target = "_blank"; wikiLink.rel = "noreferrer"; wikiLink.textContent = "Ficha Zelda Wiki ↗";
+      const fandomLink = document.createElement("a"); fandomLink.href = fandom + articleSlug(game.title); fandomLink.target = "_blank"; fandomLink.rel = "noreferrer"; fandomLink.textContent = "Wiki ES ↗";
+      const imageLink = document.createElement("a"); imageLink.href = steamGrids[game.file].page; imageLink.target = "_blank"; imageLink.rel = "noreferrer"; imageLink.textContent = "Grid ↗"; imageLink.title = "Ver portadas Grid en SteamGridDB";
+      links.append(wikiLink, fandomLink, imageLink);
+      card.append(art, info); card.dataset.group = game.group;
+      return card;
+    }
+    entries.forEach((game, i) => {
+      const target = game.group === "comun" ? document.querySelector("#shared-games") : document.querySelector(`#branch-${game.group}`);
+      target.append(makeCard(game, i));
+    });
+    const filters = document.querySelectorAll(".filter");
+    filters.forEach(button => button.addEventListener("click", () => {
+      filters.forEach(item => { const active = item === button; item.classList.toggle("active", active); item.setAttribute("aria-pressed", String(active)); });
+      const value = button.dataset.filter;
+      const common = document.querySelector(".shared");
+      const split = document.querySelector(".split");
+      const branchMap = document.querySelector(".fork-map");
+      const branchGroup = document.querySelector("#branches");
+      const branches = document.querySelectorAll(".branch");
+      common.hidden = !(value === "todas" || value === "comun");
+      split.hidden = value !== "todas";
+      branchMap.hidden = value !== "todas"; branchMap.style.display = value === "todas" ? "block" : "none";
+      branchGroup.classList.toggle("single", value !== "todas");
+      branches.forEach(branch => { branch.classList.toggle("hidden", value !== "todas" && branch.dataset.branch !== value); });
+      if (value !== "todas" && value !== "comun") common.hidden = true;
+      if (value === "comun") { branches.forEach(branch => branch.classList.add("hidden")); split.hidden = true; }
+    }));</script><script src="site.js" defer></script></body></html>
