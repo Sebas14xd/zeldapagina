@@ -11,7 +11,7 @@
     name:wikiTitle,
     wikiTitle,
     fandomTitle:wikiTitle,
-    description:"La ficha reúne únicamente información y categorías vinculadas a esta entrega en las fuentes originales."
+    description:"Consulta la sinopsis en español y las categorías propias de esta entrega."
   }:null;
   const game=localGame?{
     ...localGame,
@@ -71,7 +71,7 @@
     const title=document.querySelector("#game-title");
     const description=document.querySelector("#game-description");
     if(title)title.textContent=game.name;
-    if(description)description.textContent=game.description||"La ficha reúne únicamente información y categorías vinculadas a esta entrega en las fuentes originales.";
+    if(description)description.textContent=game.description||"Consulta la sinopsis en español y las categorías propias de esta entrega.";
     const back=document.querySelector("#game-original-link");
     if(back){
       back.href=articleUrl("zeldawiki",wikiArticleTitle());
@@ -82,7 +82,6 @@
       if(notice)notice.textContent="Edición consultada: Ocarina of Time original para Nintendo 64. Las categorías de Ocarina of Time 3D y otros relanzamientos se mantienen separadas.";
     }
     loadCover();
-    if(!localGame)loadArticleOverview();
   }
   function themeFor(name){
     const text=name.toLocaleLowerCase("en");
@@ -103,85 +102,81 @@
       const source=Object.values(payload.query?.pages||{})[0]?.thumbnail?.source;
       if(!source)return;
       const image=document.createElement("img");image.className="game-detail-cover-image";image.src=source;image.alt=`Imagen de referencia de ${game.name}`;image.fetchPriority="high";
-      image.onerror=()=>image.remove();
+      image.onerror=()=>{image.remove();if(!cover.children.length)cover.append(createText("span","game-detail-mark","✧"));};
       cover.replaceChildren(image);
     }catch(error){console.error(`No se pudo cargar la imagen de ${game.name}:`,error);}
   }
-  async function loadArticleOverview(){
-    const query=new URLSearchParams({action:"query",prop:"extracts",titles:wikiArticleTitle(),exintro:"1",explaintext:"1",exchars:"1800",format:"json",origin:"*"});
-    try{
-      const payload=await apiJson("zeldawiki",query);
-      const extract=Object.values(payload.query?.pages||{})[0]?.extract;
-      if(extract){
-        const description=document.querySelector("#game-description");
-        if(description)description.textContent=extract;
-      }
-    }catch(error){console.error(`No se pudo cargar el resumen de ${game.name}:`,error);}
+  const synopsisCache=new Map();
+  function isSpanishSynopsis(text){
+    return (text.match(/\b(el|la|los|las|un|una|unos|unas|de|del|que|en|por|para|con|su|sus)\b/gi)||[]).length>=4;
   }
-  const storyHeading=/^(story|plot|argumento|historia|trama|sinopsis)$/i;
-  const storyHeadingLoose=/story|plot|argumento|historia|trama|sinopsis/i;
-  const cleanHeading=value=>String(value||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim();
-  const storyCache=new Map();
+  function extractSpanishSynopsis(wikitext){
+    const lines=wikitext.split(/\r?\n/);
+    let inStory=false;
+    const storyLines=[];
+    for(const line of lines){
+      const heading=line.match(/^={2,}\s*(.*?)\s*={2,}\s*$/);
+      if(heading){
+        if(inStory)break;
+        inStory=/^(historia|trama|argumento|sinopsis|story|plot)$/i.test(heading[1]);
+        continue;
+      }
+      if(inStory)storyLines.push(line);
+    }
+    const paragraphs=storyLines.join("\n").split(/\n\s*\n/);
+    for(const paragraph of paragraphs){
+      let text=paragraph.trim();
+      if(!text||/^(?:\{\{|\[\[Archivo:|\[\[File:|[|*#])/.test(text))continue;
+      for(let index=0;index<3&&/\{\{[^{}]*\}\}/.test(text);index++)text=text.replace(/\{\{[^{}]*\}\}/g," ");
+      text=text.replace(/<!--[\s\S]*?-->/g," ")
+        .replace(/\[\[([^|\]]+)\|([^\]]+)\]\]/g,"$2")
+        .replace(/\[\[([^\]]+)\]\]/g,"$1")
+        .replace(/\[(?:https?:\/\/\S+)\s+([^\]]+)\]/g,"$1")
+        .replace(/'{2,}/g,"")
+        .replace(/<[^>]*>/g," ")
+        .replace(/&nbsp;/gi," ")
+        .replace(/[\[\]{}|]/g," ")
+        .replace(/\s+/g," ")
+        .trim();
+      if(!text)continue;
+      if(text.length>280)text=text.slice(0,280).replace(/\s+\S*$/,"")+"…";
+      if(isSpanishSynopsis(text))return text;
+    }
+    return "";
+  }
   async function loadStory(){
     if(!storySection||!storyBody)return;
     const request=++storyRequest;
-    const source=wiki.value;
-    const article=source==="fandom"?game.fandomTitle:wikiArticleTitle();
-    storySection.hidden=true;
     storyBody.replaceChildren();
     if(storyTitle)storyTitle.textContent=game.name;
-    if(storyLink)storyLink.href=articleUrl(source,article);
-    if(storyStatus)storyStatus.textContent="Cargando la historia completa…";
+    if(storyLink)storyLink.href=articleUrl("fandom",game.fandomTitle);
+    storySection.hidden=false;
+    if(localGame&&game.description){
+      storyBody.append(createText("p","",game.description));
+      if(storyStatus)storyStatus.textContent="Sinopsis breve redactada en español.";
+      return;
+    }
+    if(storyStatus)storyStatus.textContent="Buscando una sinopsis en español…";
     try{
-      const key=source+"|"+article;
-      let html=storyCache.get(key);
-      if(html===undefined){
-        const sectionsParameters=new URLSearchParams({action:"parse",page:article,prop:"sections",format:"json",origin:"*"});
-        const sectionsPayload=await apiJson(source,sectionsParameters);
-        const list=(sectionsPayload.parse?.sections||[]).map(item=>({index:item.index,text:cleanHeading(item.line)}));
-        const found=list.find(item=>storyHeading.test(item.text))||list.find(item=>storyHeadingLoose.test(item.text));
-        if(!found)throw new Error("La fuente no incluye un apartado de historia para este juego.");
-        const textParameters=new URLSearchParams({action:"parse",page:article,prop:"text",section:found.index,format:"json",origin:"*"});
-        const textPayload=await apiJson(source,textParameters);
-        html=sanitizeStory(textPayload.parse?.text?.["*"]||"",source);
-        storyCache.set(key,html);
+      const article=game.fandomTitle||game.name;
+      const key=article.toLocaleLowerCase("es");
+      let synopsis=synopsisCache.get(key);
+      if(synopsis===undefined){
+        const parameters=new URLSearchParams({action:"parse",page:article,prop:"wikitext",format:"json",origin:"*"});
+        const payload=await apiJson("fandom",parameters);
+        synopsis=extractSpanishSynopsis(payload.parse?.wikitext?.["*"]||"");
+        if(!isSpanishSynopsis(synopsis))throw new Error("La fuente no ofrece una sinopsis en español para esta entrega.");
+        synopsisCache.set(key,synopsis);
       }
       if(request!==storyRequest)return;
-      if(!html||!html.trim())throw new Error("El apartado de historia llegó vacío.");
-      storyBody.innerHTML=html;
-      storySection.hidden=false;
-      if(storyStatus)storyStatus.textContent=`Historia completa de ${game.name} · texto de la fuente original.`;
+      storyBody.append(createText("p","",synopsis));
+      if(storyStatus)storyStatus.textContent="Sinopsis en español consultada en la fuente comunitaria.";
     }catch(error){
       if(request!==storyRequest)return;
-      console.error(`No se pudo cargar la historia de ${game.name}:`,error);
-      if(storyStatus)storyStatus.textContent=`No se pudo cargar la historia desde esta fuente. ${error.message}`;
+      console.error(`No se pudo cargar la sinopsis en español de ${game.name}:`,error);
+      storyBody.append(createText("p","","Todavía no hay una sinopsis en español disponible para esta entrega. Puedes consultar la fuente enlazada para ver si existe una ficha traducida."));
+      if(storyStatus)storyStatus.textContent="No se encontró un resumen en español.";
     }
-  }
-  function sanitizeStory(html,source){
-    const doc=new DOMParser().parseFromString(html,"text/html");
-    doc.querySelectorAll("script,style,link,meta,iframe,object,embed,form,input,button,select,textarea,audio,video,.toc,.mw-editsection,.mw-editsection-bracket,.navbox,.mw-references-wrap,.mw-empty-elt,sup.reference,.reference,.error,table").forEach(node=>node.remove());
-    const base=source==="fandom"?"https://zelda.fandom.com":"https://zeldawiki.wiki";
-    doc.querySelectorAll("a").forEach(anchor=>{
-      let href=anchor.getAttribute("href")||"";
-      if(href.startsWith("/"))href=base+href;
-      if(!/^https?:/i.test(href)){anchor.removeAttribute("href");return;}
-      anchor.target="_blank";anchor.rel="noopener noreferrer";
-    });
-    doc.querySelectorAll("img").forEach(image=>{
-      const src=image.getAttribute("data-src")||image.getAttribute("src")||"";
-      if(!/^https?:/i.test(src)){image.remove();return;}
-      image.setAttribute("src",src);
-      image.removeAttribute("data-src");image.removeAttribute("srcset");image.removeAttribute("data-srcset");
-      image.loading="lazy";image.decoding="async";image.className="game-story-image";
-    });
-    doc.querySelectorAll("*").forEach(element=>{
-      for(const attribute of [...element.attributes])if(/^on/i.test(attribute.name))element.removeAttribute(attribute.name);
-      if(/^javascript:/i.test(element.getAttribute("href")||""))element.removeAttribute("href");
-    });
-    doc.querySelectorAll("p").forEach(paragraph=>{
-      if(!paragraph.textContent.trim()&&!paragraph.querySelector("img"))paragraph.remove();
-    });
-    return doc.body.innerHTML;
   }
   function createSection(group,state){
     const section=document.createElement("section");section.className="game-entity-section";section.id=`game-section-${group.id}`;
@@ -218,52 +213,107 @@
   const artworkUrlCache=new Map();
   const stopWords=new Set(["the","of","and","in","de","la","el","los","las","del"]);
   const tokenize=value=>value.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().split(/[^a-z0-9]+/).filter(token=>token.length>1&&!stopWords.has(token));
-  function getArtworkIndex(source){
-    if(source!=="zeldawiki"||!game.artworkCategory)return Promise.resolve(null);
+  const gameImageTags={
+    "the-legend-of-zelda":["tloz","zelda 1"],
+    "zelda-ii":["aol","adventure of link","zelda 2"],
+    "a-link-to-the-past":["alttp","a link to the past"],
+    "links-awakening":["la","links awakening"],
+    "oracle-of-ages":["ooa","oracle of ages"],
+    "oracle-of-seasons":["oos","oracle of seasons"],
+    "four-swords":["fs","four swords"],
+    "four-swords-adventures":["fsa","four swords adventures"],
+    "minish-cap":["mc","minish cap"],
+    "ocarina-of-time":["oot","ocarina of time"],
+    "majoras-mask":["mm","majora's mask","majoras mask"],
+    "wind-waker":["tww","ww","wind waker"],
+    "twilight-princess":["tp","twilight princess"],
+    "phantom-hourglass":["ph","phantom hourglass"],
+    "spirit-tracks":["st","spirit tracks"],
+    "skyward-sword":["ss","skyward sword"],
+    "a-link-between-worlds":["albw","a link between worlds"],
+    "tri-force-heroes":["tfh","tri force heroes"],
+    "breath-of-the-wild":["botw","breath of the wild"],
+    "tears-of-the-kingdom":["totk","tears of the kingdom"]
+  };
+  function imageMatchesGame(filename){
+    const normalized=filename.replace(/^(File|Archivo):/i,"").replaceAll("_"," ").toLocaleLowerCase("en");
+    const id=String(game.id||"").toLocaleLowerCase("en").replace(/^wiki-/,"");
+    const crossoverPrefixes=["ssb","super smash","smash bros","hyrule warriors","age of calamity","cadence of hyrule"];
+    const otherCrossover=crossoverPrefixes.some(prefix=>{
+      if(!normalized.startsWith(prefix))return false;
+      return !(prefix==="hyrule warriors"&&id.includes("hyrule-warriors")
+        ||prefix==="age of calamity"&&id.includes("age-of-calamity")
+        ||prefix==="cadence of hyrule"&&id.includes("cadence-of-hyrule"));
+    });
+    if(otherCrossover)return false;
+    if(id==="ocarina-of-time"&&/\b(?:oot\s*3d|ocarina(?: of time)?\s*3d|oot\s*3ds|3ds)\b/.test(normalized))return false;
+    const tags=gameImageTags[id]||[game.name.replace(/^The Legend of Zelda:\s*/i,"").trim()];
+    const fileTokens=tokenize(normalized);
+    return tags.filter(Boolean).some(tag=>tag.includes(" ")?normalized.includes(tag):fileTokens.includes(tag));
+  }
+  function findArticleImage(item,meta){
+    const aliases=[item.title.replace(/\s*\([^)]*\)\s*$/,""),meta.englishTitle?.replace(/\s*\([^)]*\)\s*$/,"")||""]
+      .map(tokenize).filter(tokens=>tokens.length);
+    return (meta.imageFiles||[]).find(filename=>{
+      if(!imageMatchesGame(filename))return false;
+      const available=tokenize(filename.replace(/^(File|Archivo):/i,"").replace(/\.[^.]+$/,""));
+      return aliases.some(tokens=>tokens.every(token=>available.includes(token)));
+    })||"";
+  }
+  function getArtworkIndex(){
+    if(!game.artworkCategory)return Promise.resolve(null);
+    const source="zeldawiki";
     const key=source+"|"+game.artworkCategory;
     if(!artworkIndexCache.has(key)){
       const request=(async()=>{
         const parameters=new URLSearchParams({action:"query",list:"categorymembers",cmtitle:`Category:${game.artworkCategory}`,cmtype:"file",cmlimit:"500",format:"json",origin:"*"});
         const payload=await apiJson(source,parameters);
-        return (payload.query?.categorymembers||[]).map(item=>({title:item.title,tokens:tokenize(item.title.replace(/^File:/,"").replace(/\.[^.]+$/,""))}));
-      })().catch(()=>null);
+        const files=(payload.query?.categorymembers||[]).map(item=>({title:item.title,tokens:tokenize(item.title.replace(/^File:/,"").replace(/\.[^.]+$/,""))}));
+        return game.id==="ocarina-of-time"?files.filter(file=>!/(?:oot\s*3d|ocarina(?: of time)?\s*3d|oot\s*3ds|3ds)/i.test(file.title)):files;
+      })().catch(error=>{
+        console.error(`No se pudo cargar el arte de ${game.name}:`,error);
+        return null;
+      });
       artworkIndexCache.set(key,request);
     }
     return artworkIndexCache.get(key);
   }
-  function findStyleFile(title,index){
+  function findStyleFile(title,index,aliases=[]){
     if(!index?.length)return "";
-    const wanted=tokenize(title);
-    if(!wanted.length)return "";
+    const candidates=[title,...aliases].map(tokenize).filter(tokens=>tokens.length);
+    if(!candidates.length)return "";
     let best="";let bestScore=-1;
     for(const file of index){
-      if(!wanted.every(token=>file.tokens.includes(token)))continue;
-      let score=0;
       const base=file.tokens.join(" ");
-      if(base.includes(wanted.join(" ")))score+=8;
-      if(file.tokens.includes("artwork"))score+=6;
-      else if(file.tokens.includes("render"))score+=5;
-      else if(file.tokens.includes("model"))score+=3;
-      else if(file.tokens.includes("art"))score+=2;
-      if(/sprite|map|icon|screenshot|concept|scan/i.test(base))score-=6;
-      score-=file.tokens.length*0.05;
-      if(score>bestScore){bestScore=score;best=file.title;}
+      for(const wanted of candidates){
+        if(!wanted.every(token=>file.tokens.includes(token)))continue;
+        let score=0;
+        if(base.includes(wanted.join(" ")))score+=8;
+        if(file.tokens.includes("artwork"))score+=6;
+        else if(file.tokens.includes("render"))score+=5;
+        else if(file.tokens.includes("model"))score+=3;
+        else if(file.tokens.includes("art"))score+=2;
+        if(/sprite|map|icon|screenshot|concept|scan/i.test(base))score-=6;
+        score-=file.tokens.length*0.05;
+        if(score>bestScore){bestScore=score;best=file.title;}
+      }
     }
     return bestScore>=0?best:"";
   }
   async function resolveArtworkUrls(source,titles){
-    const missing=[...new Set(titles.filter(title=>title&&!artworkUrlCache.has(title)))];
+    const cacheKey=title=>`${source}|${title}`;
+    const missing=[...new Set(titles.filter(title=>title&&!artworkUrlCache.has(cacheKey(title))))];
     for(let index=0;index<missing.length;index+=50){
       const batch=missing.slice(index,index+50);
       const parameters=new URLSearchParams({action:"query",prop:"imageinfo",titles:batch.join("|"),iiprop:"url",iiurlwidth:"480",format:"json",origin:"*"});
       const payload=await apiJson(source,parameters);
       for(const page of Object.values(payload.query?.pages||{})){
         const url=page.imageinfo?.[0]?.thumburl||page.imageinfo?.[0]?.url;
-        if(url)artworkUrlCache.set(page.title,url);
+        if(url)artworkUrlCache.set(cacheKey(page.title),url);
       }
     }
     const result=new Map();
-    for(const title of titles)if(artworkUrlCache.has(title))result.set(title,artworkUrlCache.get(title));
+    for(const title of titles)if(artworkUrlCache.has(cacheKey(title)))result.set(title,artworkUrlCache.get(cacheKey(title)));
     return result;
   }
   async function findCategory(group,source){
@@ -292,33 +342,38 @@
       const members=payload.query?.categorymembers;
       if(!Array.isArray(members))throw new Error("La categoría no devolvió resultados.");
       const titles=members.filter(item=>group.id==="art"?item.ns===6:item.ns===0).map(item=>item.title);
-      const artworkIndexPromise=group.id==="art"?Promise.resolve(null):getArtworkIndex(state.source);
+      const artworkIndexPromise=group.id==="art"?Promise.resolve(null):getArtworkIndex();
       const metadata=new Map();
       const batches=[];
       for(let index=0;index<titles.length;index+=10)batches.push(titles.slice(index,index+10));
       const detailResults=await Promise.all(batches.map(async batch=>{
         const details=group.id==="art"
           ?new URLSearchParams({action:"query",prop:"imageinfo",titles:batch.join("|"),iiprop:"url",iiurlwidth:"640",format:"json",origin:"*"})
-          :new URLSearchParams({action:"query",prop:"pageimages|extracts",titles:batch.join("|"),piprop:"thumbnail",pithumbsize:"420",exintro:"1",explaintext:"1",exchars:"460",format:"json",origin:"*"});
+          :new URLSearchParams({action:"query",prop:state.source==="fandom"?"pageimages|images|extracts|langlinks":"pageimages|images|extracts",titles:batch.join("|"),piprop:"name",imlimit:"max",exintro:"1",explaintext:"1",exchars:"460",...(state.source==="fandom"?{lllang:"en"}:{}),format:"json",origin:"*"});
         const data=await apiJson(state.source,details);
         return Object.values(data.query?.pages||{}).map(page=>group.id==="art"
           ?{title:page.title,thumbnail:page.imageinfo?.[0]?.thumburl||page.imageinfo?.[0]?.url||""}
-          :{title:page.title,thumbnail:page.thumbnail?.source||"",extract:page.extract||""});
+          :{title:page.title,englishTitle:page.langlinks?.find(link=>link.lang==="en")?.["*"]||"",imageFiles:[page.pageimage&&`${state.source==="fandom"?"Archivo":"File"}:${page.pageimage}`,...(page.images||[]).map(image=>image.title)].filter((filename,index,files)=>filename&&files.indexOf(filename)===index),extract:page.extract||""});
       }));
-      for(const page of detailResults.flat())metadata.set(page.title,{thumbnail:page.thumbnail||"",extract:page.extract||""});
+      for(const page of detailResults.flat())metadata.set(page.title,{englishTitle:page.englishTitle||"",imageFiles:page.imageFiles||[],extract:page.extract||""});
       const artworkIndex=await artworkIndexPromise;
       const styleFiles=new Map();
-      if(artworkIndex?.length){
-        for(const item of members){
-          if(item.ns!==0)continue;
-          const file=findStyleFile(item.title,artworkIndex);
-          if(file)styleFiles.set(item.title,file);
+      const articleFiles=new Map();
+      for(const item of members){
+        if(item.ns!==0)continue;
+        const meta=metadata.get(item.title)||{};
+        const file=findStyleFile(item.title,artworkIndex,[meta.englishTitle||""]);
+        if(file)styleFiles.set(item.title,file);
+        else{
+          const articleFile=findArticleImage(item,meta);
+          if(articleFile)articleFiles.set(item.title,articleFile);
         }
       }
-      const styleUrls=styleFiles.size?await resolveArtworkUrls(state.source,[...new Set(styleFiles.values())]):new Map();
+      const styleUrls=styleFiles.size?await resolveArtworkUrls("zeldawiki",[...new Set(styleFiles.values())]):new Map();
+      const articleUrls=articleFiles.size?await resolveArtworkUrls(state.source,[...new Set(articleFiles.values())]):new Map();
       state.members.push(...members.map(item=>{
         const meta=metadata.get(item.title)||{};
-        return {...item,...meta,thumbnail:styleUrls.get(styleFiles.get(item.title))||meta.thumbnail||""};
+        return {...item,...meta,thumbnail:styleUrls.get(styleFiles.get(item.title))||articleUrls.get(articleFiles.get(item.title))||""};
       }));
       state.continuation=payload.continue||null;
       state.started=true;
@@ -329,7 +384,7 @@
       state.loading=false;renderGroup(group,state);
       const errors=[...states.values()].filter(item=>item.error).length;
       const visible=[...states.values()].filter(item=>item.nodes&&!item.nodes.section.hidden).length;
-      status.textContent=errors?`${visible} apartados disponibles. No se pudo cargar alguna categoría; consulta el enlace de fuente del apartado.`:`${visible} apartados con categorías exactas de ${game.name}. Los resultados y miniaturas proceden de las fuentes seleccionadas.`;
+      status.textContent=errors?`${visible} apartados disponibles. No se pudo cargar alguna categoría; consulta el enlace de fuente del apartado.`:`${visible} apartados con categorías exactas de ${game.name}. Los resultados proceden de la fuente elegida; las miniaturas solo se muestran cuando están identificadas en el arte de esta entrega.`;
     }
   }
   function renderGroup(group,state){
@@ -351,24 +406,26 @@
       }
       if(group.id==="art"&&member.ns===6){
         if(game.id==="ocarina-of-time"&&/(?:oot\s*3d|ocarina(?: of time)?\s*3d)/i.test(member.title))continue;
-        const button=document.createElement("button");button.type="button";button.className="game-entity-card game-gallery-card";
+        const button=document.createElement("button");button.type="button";button.className="game-entity-card game-gallery-card game-entity-card-art";
         const media=document.createElement("div");media.className="game-entity-media";
-        if(member.thumbnail){const image=document.createElement("img");image.loading="lazy";image.decoding="async";image.alt=`${member.title.replace(/^File:/,"")} · ${game.name}`;image.src=member.thumbnail;image.onerror=()=>image.remove();media.append(image);}
+        if(member.thumbnail){const image=document.createElement("img");image.loading="lazy";image.decoding="async";image.alt=`${member.title.replace(/^File:/,"")} · ${game.name}`;image.src=member.thumbnail;image.onerror=()=>{image.remove();media.append(createText("span","game-entity-no-image","Vista previa no disponible"));};media.append(image);}
         else media.append(createText("span","game-entity-no-image","Vista previa no disponible"));
         const content=document.createElement("div");content.className="game-entity-content";
+        content.append(createText("span","game-entity-kind",group.label));
         content.append(createText("h4","",member.title.replace(/^File:/,"").replace(/\.[^.]+$/,"").replaceAll("_"," ")));
         content.append(createText("span","game-entity-link","Ampliar imagen ↗"));
         button.append(media,content);button.addEventListener("click",()=>openArtwork(member));grid.append(button);continue;
       }
       if(member.ns!==0)continue;
-      const card=document.createElement("a");card.className="game-entity-card";
+      const card=document.createElement("a");card.className=`game-entity-card game-entity-card-${group.id}`;
       const category=group.label;
       card.href=`elemento-wiki.html?title=${encodeURIComponent(member.title)}&game=${encodeURIComponent(game.name)}&category=${encodeURIComponent(category)}&source=${encodeURIComponent(state.source)}&gameId=${encodeURIComponent(game.id)}`;
       const media=document.createElement("div");media.className="game-entity-media";
       if(member.thumbnail){
-        const image=document.createElement("img");image.loading="lazy";image.decoding="async";image.alt=`${member.title} · ${game.name}`;image.src=member.thumbnail;image.onerror=()=>image.remove();media.append(image);
-      }else media.append(createText("span","game-entity-no-image","Imagen no disponible"));
+        const image=document.createElement("img");image.loading="lazy";image.decoding="async";image.alt=`${member.title} · ${game.name}`;image.src=member.thumbnail;image.onerror=()=>{image.remove();media.append(createText("span","game-entity-no-image","Imagen de esta entrega no disponible"));};media.append(image);
+      }else media.append(createText("span","game-entity-no-image","Imagen de esta entrega no disponible"));
       const content=document.createElement("div");content.className="game-entity-content";
+      content.append(createText("span","game-entity-kind",group.label));
       content.append(createText("h4","",member.title));
       if(member.extract)content.append(createText("p","",member.extract));
       content.append(createText("span","game-entity-link","Abrir ficha individual →"));

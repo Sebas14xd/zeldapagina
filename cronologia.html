@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1715"><link rel="icon" type="image/svg+xml" href="favicon.svg"><meta name="description" content="Línea temporal de The Legend of Zelda basada en la tabla compartida."><title>Cronología · El ciclo de Hyrule</title><link rel="preconnect" href="https://zeldawiki.wiki"><link rel="preconnect" href="https://zelda.fandom.com"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"></head><body ><header class="topbar">
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b1715"><link rel="icon" type="image/svg+xml" href="favicon.svg"><meta name="description" content="Línea temporal de The Legend of Zelda basada en la tabla compartida."><title>Cronología · El ciclo de Hyrule</title><link rel="preconnect" href="https://zeldawiki.wiki"><link rel="preconnect" href="https://zelda.fandom.com"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="assets/css/style.css"></head><body ><header class="topbar">
   <a class="brand" href="index.html" aria-label="Inicio — El ciclo de Hyrule"><svg class="brand-mark" viewBox="0 0 42 42" fill="none" aria-hidden="true"><path d="M21 3 3 35h36L21 3Z" stroke="currentColor" stroke-width="1.4"/><path d="m12 19 9 16 9-16M21 3v16M12 19h18" stroke="currentColor" stroke-width="1.2"/></svg>El ciclo de Hyrule</a>
   <nav class="topnav" aria-label="Navegación principal"><a href="index.html">Inicio</a><a href="cronologia.html">Cronología</a><a href="galeria.html">Juegos</a><a href="enciclopedia.html">Enciclopedia</a><a href="fuentes.html">Fuentes</a></nav>
 </header><main><section class="page-intro"><p class="section-kicker">Historia y ramas</p><h1>La cronología de Hyrule</h1><p>La tabla compartida organiza los juegos en una ruta común hasta Ocarina of Time y tres continuaciones. Las fichas conservan el orden de esa tabla.</p></section><section class="timeline-wrap" id="cronologia" aria-labelledby="timeline-title">
@@ -96,14 +96,10 @@
       };
       art.append(image);
       const info = document.createElement("div"); info.className = "game-info";
-      info.innerHTML = `<div class="game-meta"><span>${game.era}</span><span class="game-num">${game.n}</span></div><h3></h3><p></p><div class="card-links"></div>`;
+      info.innerHTML = `<div class="game-meta"><span>${game.era}</span><span class="game-num">${game.n}</span></div><h3></h3><p></p>`;
       info.querySelector("h3").textContent = game.title;
       info.querySelector("p").textContent = game.summary;
-      const links = info.querySelector(".card-links");
-      const wikiLink = document.createElement("a"); wikiLink.href = "https://zeldawiki.wiki/wiki/Special:Search?search=" + encodeURIComponent(game.title); wikiLink.target = "_blank"; wikiLink.rel = "noreferrer"; wikiLink.textContent = "Ficha Zelda Wiki ↗";
-      const fandomLink = document.createElement("a"); fandomLink.href = fandom + articleSlug(game.title); fandomLink.target = "_blank"; fandomLink.rel = "noreferrer"; fandomLink.textContent = "Wiki ES ↗";
-      const imageLink = document.createElement("a"); imageLink.href = steamGrids[game.file].page; imageLink.target = "_blank"; imageLink.rel = "noreferrer"; imageLink.textContent = "Grid ↗"; imageLink.title = "Ver portadas Grid en SteamGridDB";
-      links.append(wikiLink, fandomLink, imageLink);
+      
       card.append(art, info); card.dataset.group = game.group;
       return card;
     }
@@ -127,4 +123,4 @@
       branches.forEach(branch => { branch.classList.toggle("hidden", value !== "todas" && branch.dataset.branch !== value); });
       if (value !== "todas" && value !== "comun") common.hidden = true;
       if (value === "comun") { branches.forEach(branch => branch.classList.add("hidden")); split.hidden = true; }
-    }));</script><script src="site.js" defer></script></body></html>
+    }));</script><script src="assets/js/shared/site.js" defer></script></body></html>

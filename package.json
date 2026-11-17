@@ -1,0 +1,8 @@
+{
+  "name": "el-ciclo-de-hyrule",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build-pages.js"
+  }
+}
